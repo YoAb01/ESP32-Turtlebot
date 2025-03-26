@@ -10,5 +10,6 @@
     "files.associations": {
         "ledblink.h": "c"
     },
-    "idf.flashType": "UART"
+    "idf.flashType": "UART",
+    "C_Cpp.errorSquiggles": "disabled"
 }
