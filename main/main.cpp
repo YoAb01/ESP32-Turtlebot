@@ -5,4 +5,5 @@
 extern "C" void app_main(void) {
     InitTimer1();
     InitTimer23();
+    InitTimer4();
 }

@@ -11,5 +11,6 @@
         "ledblink.h": "c"
     },
     "idf.flashType": "UART",
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "ros.distro": "jazzy"
 }
