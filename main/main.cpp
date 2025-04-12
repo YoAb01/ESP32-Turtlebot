@@ -2,6 +2,7 @@
 #include "LED_Blink.h"
 #include "timer/timer.h"
 #include "robot/robot.h"
+#include "connection/wifi_ap.h"
 #include "freertos/FreeRTOS.h"
 
 #define MOTOR_SPEED 200
@@ -55,5 +56,6 @@ extern "C" void app_main(void) {
     // Control Motors
     mcpwm_motor_init();
     xTaskCreate(test_robot_movement, "robot_movement_task", 2048, NULL, 5, NULL);
+    wifi_init_ap();
 }
 

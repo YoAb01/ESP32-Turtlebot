@@ -4,9 +4,11 @@ idf_component_register(
     "LED/LED_Blink.cpp"
     "timer/timer.cpp"
     "robot/robot.cpp"
+    "connection/wifi_ap.cpp"
   INCLUDE_DIRS
     "."
     "LED"
     "robot"
     "timer"
+    "connection"
   )
