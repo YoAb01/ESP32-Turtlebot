@@ -1,2 +1,12 @@
-idf_component_register(SRCS "main.cpp" "LED/LED_Blink.cpp" "timer/timer.cpp"
-                    INCLUDE_DIRS "." "LED")
+idf_component_register(
+  SRCS
+    "main.cpp"
+    "LED/LED_Blink.cpp"
+    "timer/timer.cpp"
+    "robot/robot.cpp"
+  INCLUDE_DIRS
+    "."
+    "LED"
+    "robot"
+    "timer"
+  )
