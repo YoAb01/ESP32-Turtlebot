@@ -1,6 +1,6 @@
 #include "connection/wifi_ap.h"
 #include "robot/robot.h"
-
+#include <algorithm>
 
 #define TAG "WIFI_AP"
 #define PORT 4210
@@ -74,27 +74,19 @@ void udp_server_task(void *pvParameters) {
         rx_buffer[len] = 0;
         int8_t axis1 = 0, axis2 = 0;
         if (sscanf(rx_buffer, "%hhd,%hhd", &axis1, &axis2) == 2) {
-              int speed = 0;
-              // Axis 0 = forward/backward
-              if (axis1 > 10) {
-                  speed = axis1 * 2;
-                  robot_move_forward(speed);
-              } else if (axis1 < -10) {
-                  speed = -axis1 * 2;
-                  robot_move_backward(speed);
-              }
-              // Axis 1 = turning
-              if (axis2 > 10) {
-                  speed = axis2 * 2;
-                  robot_turn_right(speed);
-              } else if (axis2 < -10) {
-                  speed = -axis2 * 2;
-                  robot_turn_left(speed);
-              }
-              // Deadzone
-              else {
-                  robot_full_stop();
-              }
+              if (abs(axis1) < 10) axis1 = 0;
+              if (abs(axis2) < 10) axis2 = 0;
+
+              // Combine forward/backward with turning
+              int left_speed = (axis1 + axis2) * 2;
+              int right_speed = (axis1 - axis2) * 2;
+
+              // Clamp to valid PWM range [-255, 255]
+              left_speed = std::max(-255, std::min(255, left_speed));
+              right_speed = std::max(-255, std::min(255, right_speed));
+
+              mcpwm_motor_control(1, left_speed);
+              mcpwm_motor_control(2, right_speed);
         } else {
             ESP_LOGW(TAG, "Invalid packet: %s", rx_buffer);
         }
