@@ -2,6 +2,12 @@
 
 import sys
 import pygame
+import socket
+
+ESP32_IP = "192.168.4.1"
+ESP32_PORT = 4210
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 pygame.init()
 pygame.joystick.init()
@@ -44,6 +50,9 @@ def draw_stick_circle(center_x, center_y, axis_x_val, axis_y_val, radius, label)
     screen.blit(text, (center_x - text.get_width() // 2, center_y + radius + 10))
 
 
+def scale_to_int8(val):
+    return max(-127, min(127, int(val * 127)))
+
 while True:
     screen.fill((20, 20, 20))
     for event in pygame.event.get():
@@ -59,8 +68,16 @@ while True:
 
     axis0 = joystick.get_axis(0)
     axis1 = joystick.get_axis(1)
+    axis1rect = -axis1
     axis2 = joystick.get_axis(2) if joystick.get_numaxes() > 2 else 0
     axis3 = joystick.get_axis(3) if joystick.get_numaxes() > 3 else 0
+
+    scaled0 = scale_to_int8(axis3)
+    scaled1 = scale_to_int8(axis1rect)
+
+    message = f"{scaled1}, {scaled0}"
+    print(f"Sending {message}")
+    sock.sendto(message.encode(), (ESP32_IP, ESP32_PORT))
 
     draw_stick_circle(180, 180, axis0, axis1, 60, "Left Stick")
     draw_stick_circle(420, 180, axis3, axis2, 60, "Right Stick")

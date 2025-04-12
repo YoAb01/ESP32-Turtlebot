@@ -53,9 +53,9 @@ extern "C" void app_main(void) {
     InitTimer1();
     InitTimer23();
     InitTimer4();
-    // Control Motors
+    // Control Robot via joystick
     mcpwm_motor_init();
-    xTaskCreate(test_robot_movement, "robot_movement_task", 2048, NULL, 5, NULL);
     wifi_init_ap();
+    xTaskCreate(udp_server_task, "udp_server_task", 4096, NULL, 5, NULL);
 }
 

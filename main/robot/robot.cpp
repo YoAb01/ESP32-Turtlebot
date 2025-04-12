@@ -75,6 +75,31 @@ esp_err_t mcpwm_motor_control(uint8_t motor_num, int speed) {
     return ESP_OK;
 }
 
+void robot_move_forward(int speed) {
+    mcpwm_motor_control(1, speed);
+    mcpwm_motor_control(2, speed);
+}
+
+void robot_move_backward(int speed) {
+    mcpwm_motor_control(1, -speed);
+    mcpwm_motor_control(2, -speed);
+}
+
+void robot_turn_left(int speed) {
+    mcpwm_motor_control(1, -speed);
+    mcpwm_motor_control(2, speed);
+}
+
+void robot_turn_right(int speed) {
+    mcpwm_motor_control(1, speed);
+    mcpwm_motor_control(2, -speed);
+}
+
+void robot_full_stop() {
+    mcpwm_motor_stop(1);
+    mcpwm_motor_stop(2);
+}
+
 void mcpwm_motor_stop(uint8_t motor_num) {
   if (motor_num == 1) {
     gpio_set_level(MOTOR_1_IN1, 0);

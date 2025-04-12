@@ -36,3 +36,70 @@ void wifi_init_ap() {
 
     ESP_LOGI("WIFI_AP", "Access Point started! SSID: %s, Password: %s", ap_config.ap.ssid, ap_config.ap.password);
 }
+
+void udp_server_task(void *pvParameters) {
+    char rx_buffer[MAX_BUF];
+    struct sockaddr_in6 source_addr;
+    socklen_t socklen = sizeof(source_addr);
+
+    struct sockaddr_in6 dest_addr;
+    dest_addr.sin6_family = AF_INET6;
+    dest_addr.sin6_port = htons(PORT);
+    dest_addr.sin6_addr = in6addr_any;
+
+    int sock = socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP);
+    if (sock < 0) {
+        ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
+        vTaskDelete(NULL);
+        return;
+    }
+
+    if (bind(sock, (struct sockaddr *)&dest_addr, sizeof(dest_addr)) < 0) {
+        ESP_LOGE(TAG, "Socket unable to bind: errno %d", errno);
+        close(sock);
+        vTaskDelete(NULL);
+        return;
+    }
+
+    ESP_LOGI(TAG, "UDP server listening on port %d", PORT);
+
+    while (true) {
+        int len = recvfrom(sock, rx_buffer, MAX_BUF - 1, 0, (struct sockaddr *)&source_addr, &socklen);
+
+        if (len < 0) {
+            ESP_LOGE(TAG, "recvfrom failed: errno %d", errno);
+            break;
+        }
+
+        rx_buffer[len] = 0;
+        int8_t axis1 = 0, axis2 = 0;
+        if (sscanf(rx_buffer, "%hhd,%hhd", &axis1, &axis2) == 2) {
+              int speed = 0;
+              // Axis 0 = forward/backward
+              if (axis1 > 10) {
+                  speed = axis1 * 2;
+                  robot_move_forward(speed);
+              } else if (axis1 < -10) {
+                  speed = -axis1 * 2;
+                  robot_move_backward(speed);
+              }
+              // Axis 1 = turning
+              if (axis2 > 10) {
+                  speed = axis2 * 2;
+                  robot_turn_right(speed);
+              } else if (axis2 < -10) {
+                  speed = -axis2 * 2;
+                  robot_turn_left(speed);
+              }
+              // Deadzone
+              else {
+                  robot_full_stop();
+              }
+        } else {
+            ESP_LOGW(TAG, "Invalid packet: %s", rx_buffer);
+        }
+    }
+
+    close(sock);
+    vTaskDelete(NULL);
+}
