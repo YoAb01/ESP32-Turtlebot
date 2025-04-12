@@ -10,6 +10,10 @@
 #define MOTOR_1_IN1    GPIO_NUM_27    // Motor 1 direction pin 1
 #define MOTOR_1_IN2    GPIO_NUM_14    // Motor 1 direction pin 2
 
+#define MOTOR_2_ENB    GPIO_NUM_25    // Motor 1 enable pin
+#define MOTOR_2_IN1    GPIO_NUM_33    // Motor 1 direction pin 1
+#define MOTOR_2_IN2    GPIO_NUM_32    // Motor 1 direction pin 2
+
 #define MOTOR_PWM_FREQ 30000          // Motor frequency in hz
 #define MOTOR_PWM_RES  255            // 8-bit resolution. Value in [0, 255]
 
@@ -26,10 +30,11 @@ esp_err_t mcpwm_motor_init(void) {
   pwm_config.counter_mode = MCPWM_UP_COUNTER;
 
   ESP_ERROR_CHECK(mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM0A, MOTOR_1_ENA));
+  ESP_ERROR_CHECK(mcpwm_gpio_init(MCPWM_UNIT_1, MCPWM1A, MOTOR_2_ENB));
 
   // Configure directiuon pins as regular GPIO output
   gpio_config_t io_conf = {};
-  io_conf.pin_bit_mask = (1ULL << MOTOR_1_IN1) | (1ULL << MOTOR_1_IN2);
+  io_conf.pin_bit_mask = (1ULL << MOTOR_1_IN1) | (1ULL << MOTOR_1_IN2) | (1ULL << MOTOR_2_IN1) | (1ULL << MOTOR_2_IN2);
   io_conf.mode = GPIO_MODE_OUTPUT;
   io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
   io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
@@ -38,6 +43,7 @@ esp_err_t mcpwm_motor_init(void) {
 
   // Initialize PWM for Motor
   ESP_ERROR_CHECK(mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config));
+  ESP_ERROR_CHECK(mcpwm_init(MCPWM_UNIT_1, MCPWM_TIMER_1, &pwm_config));
 
   ESP_LOGI(TAG, "MCPWM motor control initialized");
   return ESP_OK;
@@ -57,7 +63,9 @@ esp_err_t mcpwm_motor_control(uint8_t motor_num, int speed) {
     gpio_set_level(MOTOR_1_IN2, speed >= 0 ? 0 : 1);
     mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, duty_cycle);
   } else if (motor_num == 2) {
-    // TODO: Implement this for the second motor
+    gpio_set_level(MOTOR_2_IN1, speed >= 0 ? 1 : 0);
+    gpio_set_level(MOTOR_2_IN2, speed >= 0 ? 0 : 1);
+    mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A, duty_cycle);
   } else {
     ESP_LOGE(TAG, "nvalid motor number: %d", motor_num);
   }
@@ -73,6 +81,8 @@ void mcpwm_motor_stop(uint8_t motor_num) {
     gpio_set_level(MOTOR_1_IN2, 0);
     mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, 0);
   } else if (motor_num == 2) {
-    //TODO: Implement this for the second motor
+    gpio_set_level(MOTOR_2_IN1, 0);
+    gpio_set_level(MOTOR_2_IN2, 0);
+    mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
   }
 }

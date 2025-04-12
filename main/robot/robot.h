@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "esp_err.h"
+#include "esp_log.h"
 
 // Motor control functions
 esp_err_t mcpwm_motor_init(void);
