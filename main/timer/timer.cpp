@@ -9,7 +9,7 @@
 
 #define LED_RED GPIO_NUM_23   // Red LED on GPIO 23
 #define LED_BLUE GPIO_NUM_22   // Blue LED on GPIO 22
-#define LED_GREEN GPIO_NUM_1  // Blue LED on GPIO 1
+#define LED_GREEN GPIO_NUM_21  // Green LED on GPIO 21
 
 static const char *TAG = "TIMER";
 

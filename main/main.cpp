@@ -3,6 +3,7 @@
 #include "timer/timer.h"
 #include "robot/robot.h"
 #include "connection/wifi_ap.h"
+#include "sensors/ultrasonic.h"
 #include "freertos/FreeRTOS.h"
 
 #define MOTOR_SPEED 200
@@ -48,6 +49,17 @@ void test_robot_movement(void *pvParameter) {
     }
 }
 
+static void ultrasonic_monitor_task(void *pvParameters) {
+  vTaskDelay(pdMS_TO_TICKS(500));
+  while (1) {
+    float distance = get_distance_cm();
+
+    printf("Distance: %.2f cm\n", distance);
+
+    vTaskDelay(pdMS_TO_TICKS(100));
+  }
+}
+
 extern "C" void app_main(void) {
     // Control LED (timer based)
     InitTimer1();
@@ -57,5 +69,10 @@ extern "C" void app_main(void) {
     mcpwm_motor_init();
     wifi_init_ap();
     xTaskCreate(udp_server_task, "udp_server_task", 4096, NULL, 5, NULL);
+
+    // Ultrasonci sensor task
+    init_ultrasonic();
+    trigger_ultrasonic();
+    xTaskCreate(ultrasonic_monitor_task, "ultrasonic_monitor", 2048, NULL, 3, NULL);
 }
 

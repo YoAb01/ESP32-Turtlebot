@@ -5,10 +5,12 @@ idf_component_register(
     "timer/timer.cpp"
     "robot/robot.cpp"
     "connection/wifi_ap.cpp"
+    "sensors/ultrasonic.cpp"
   INCLUDE_DIRS
     "."
     "LED"
     "robot"
     "timer"
     "connection"
+    "sensors"
   )
