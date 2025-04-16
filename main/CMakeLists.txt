@@ -4,6 +4,7 @@ idf_component_register(
     "LED/LED_Blink.cpp"
     "timer/timer.cpp"
     "robot/robot.cpp"
+    "robot/servo.cpp"
     "connection/wifi_ap.cpp"
     "sensors/ultrasonic.cpp"
   INCLUDE_DIRS

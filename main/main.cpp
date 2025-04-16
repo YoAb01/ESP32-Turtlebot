@@ -2,6 +2,7 @@
 #include "LED_Blink.h"
 #include "timer/timer.h"
 #include "robot/robot.h"
+#include "robot/servo.h"
 #include "connection/wifi_ap.h"
 #include "sensors/ultrasonic.h"
 #include "freertos/FreeRTOS.h"
@@ -60,6 +61,19 @@ static void ultrasonic_monitor_task(void *pvParameters) {
   }
 }
 
+static void servo_sweep_task(void *pvParameter) {
+  while (1) {
+    for (int angle = 0; angle <= 180; angle += 10) {
+      servo_set_angle(angle);
+      vTaskDelay(pdMS_TO_TICKS(400));
+    }
+    for (int angle = 180; angle >= 0; angle -= 10) {
+      servo_set_angle(angle);
+      vTaskDelay(pdMS_TO_TICKS(400));
+    }
+  }
+}
+
 extern "C" void app_main(void) {
     // Control LED (timer based)
     InitTimer1();
@@ -70,9 +84,13 @@ extern "C" void app_main(void) {
     wifi_init_ap();
     xTaskCreate(udp_server_task, "udp_server_task", 4096, NULL, 5, NULL);
 
-    // Ultrasonci sensor task
+    // Ultrasonic sensor task
     init_ultrasonic();
     trigger_ultrasonic();
     xTaskCreate(ultrasonic_monitor_task, "ultrasonic_monitor", 2048, NULL, 3, NULL);
+
+    // Servo task
+    servo_init(GPIO_NUM_5);
+    xTaskCreate(servo_sweep_task, "servo_sweep_task", 2048, NULL, 2, NULL);
 }
 
