@@ -1,0 +1,12 @@
+Flask
+flask-socketio
+eventlet
+pyserial
+requests
+numpy
+scipy
+matplotlib
+pyyaml
+setuptools
+typeguard
+

@@ -90,7 +90,7 @@ extern "C" void app_main(void) {
     xTaskCreate(ultrasonic_monitor_task, "ultrasonic_monitor", 2048, NULL, 3, NULL);
 
     // Servo task
-    servo_init(GPIO_NUM_5);
+    servo_init(GPIO_NUM_15);
     xTaskCreate(servo_sweep_task, "servo_sweep_task", 2048, NULL, 2, NULL);
 }
 

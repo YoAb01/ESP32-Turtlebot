@@ -3,3 +3,6 @@ sdkconfig
 sdkconfig.old
 .cache/**
 .vscode/**
+flask_turtlebot/app/__pycache__/
+flask_turtlebot/venv/
+flask_turtlebot/app/routes/__pycache__/
