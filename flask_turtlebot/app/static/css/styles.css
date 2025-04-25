@@ -82,12 +82,6 @@ body {
   margin-top: 50px;
 }
 
-.section-title {
-  margin-bottom: 20px;
-  color: #37474f;
-  text-align: center;
-}
-
 /* Manual Control Layout */
 .manual-columns {
   display: flex;
@@ -238,7 +232,7 @@ body {
 .rgb-values {
   display: flex;
   gap: 10px;
-  margin-top: 15px;
+  margin-top: 35px;
 }
 .rgb-values label {
   display: flex;
