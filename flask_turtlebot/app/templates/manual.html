@@ -1,0 +1,52 @@
+{% extends "home.html" %}
+{% block content %}
+<h2 class="section-title">Manual Control Dashboard</h2>
+<div class="manual-columns">
+  <div class="column">
+  <!-- LED Control -->
+    <div class="card led-card">
+      <div class="card-header">LED Control</div>
+      <div class="card-body split-led-body">
+        <!-- Left subcolumn: LED Buttons -->
+        <div class="led-buttons-column">
+          <div class="led-control">
+            <button class="led-toggle red">Red</button>
+          </div>
+          <div class="led-control">
+            <button class="led-toggle blue">Blue</button>
+          </div>
+          <div class="led-control">
+            <button class="led-toggle green">Green</button>
+          </div>
+          <div class="led-control">
+            <button class="led-toggle yellow">Yellow</button>
+          </div>
+        </div>
+        <!-- Right subcolumn: RGB Wheel -->
+        <div class="led-wheel-column">
+          <div id="colorWheel" style="width: 150px; height: 150px; margin:auto;"></div>
+          <div class="rgb-values">
+            <label>R: <input type=number"" name="r" value="255" min="0" max="255" /></label>
+            <label>G: <input type=number"" name="g" value="255" min="0" max="255" /></label>
+            <label>B: <input type=number"" name="b" value="255" min="0" max="255" /></label>
+          </div>
+          <button class="rgb-toggle">RGB</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- TODO: Servo Control Front-->
+
+
+
+
+
+
+</div>
+
+
+
+
+
+{% endblock %}
