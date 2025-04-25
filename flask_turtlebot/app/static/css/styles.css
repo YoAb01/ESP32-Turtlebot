@@ -126,7 +126,7 @@ body {
 
 /* LED Control Card */
 .led-card .card-body {
-  padding: 20px;
+  padding: 15px;
 }
 .split-led-body {
   display: flex;
