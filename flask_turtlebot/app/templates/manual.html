@@ -4,7 +4,7 @@
 <div class="manual-columns">
   <!--Column 1: LED and Servo Controls-->
   <div class="column">
-  <!-- LED Control -->
+    <!-- LED Control -->
     <div class="card led-card">
       <div class="card-header">LED Control</div>
       <div class="card-body split-led-body">
@@ -35,27 +35,47 @@
         </div>
       </div>
     </div>
+    <!-- Servo Front Card -->
+    <div class="card servo-card">
+      <div class="card-header">Servo Front</div>
+      <div class="card-body">
+        <div class="servo-buttons">
+          <button class="servo-btn up">Up</button>
+          <div class="servo-horizontal">
+            <button class="servo-btn left">Left</button>
+            <button class="servo-btn home">Home</button>
+            <button class="servo-btn right">Right</button>
+          </div>
+          <button class="servo-btn down">Down</button>
+        </div>
+        <div class="servo-sliders">
+          <div class="slider-container">
+            <label>Vertical</label>
+            <div class="slider-with-input">
+              <input type="range" min="0" max="180" value="90" class="servo-slider vertical">
+              <input type="number" min="0" max="180" value="90" class="servo-value">
+            </div>
+          </div>
+          <div class="slider-container">
+            <label>Horizontal</label>
+            <div class="slider-with-input">
+              <input type="range" min="0" max="180" value="90" class="servo-slider horizontal">
+              <input type="number" min="0" max="180" value="90" class="servo-value">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  
-  <!-- TODO: Servo Control Front-->
-
-
 
   <!-- Column 2 (empty for now) -->
   <div class="column">
     <!-- Content for column 2 will go here -->
   </div>
-  
+
   <!-- Column 3 (empty for now) -->
   <div class="column">
     <!-- Content for column 3 will go here -->
   </div>
-
-
 </div>
-
-
-
-
-
 {% endblock %}
