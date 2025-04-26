@@ -4,6 +4,7 @@
 #include "robot/robot.h"
 #include "robot/servo.h"
 #include "connection/wifi_ap.h"
+#include "connection/wifi_conn.h"
 #include "sensors/ultrasonic.h"
 #include "freertos/FreeRTOS.h"
 
@@ -76,13 +77,20 @@ static void servo_sweep_task(void *pvParameter) {
 
 extern "C" void app_main(void) {
     // Control LED (timer based)
-    InitTimer1();
-    InitTimer23();
-    InitTimer4();
+    // InitTimer1();
+    // InitTimer23();
+    // InitTimer4();
+
     // Control Robot via joystick
     mcpwm_motor_init();
-    wifi_init_ap();
-    xTaskCreate(udp_server_task, "udp_server_task", 4096, NULL, 5, NULL);
+
+    // Setup ESP32 AP
+    // wifi_init_ap();
+    // xTaskCreate(udp_server_task_ap, "udp_server_task", 4096, NULL, 5, NULL);
+
+    //Setup ESP32 connection to home network
+    wifi_init_sta();
+    xTaskCreate(udp_server_task_conn, "udp_server", 4096, NULL, 5, NULL);
 
     // Ultrasonic sensor task
     init_ultrasonic();

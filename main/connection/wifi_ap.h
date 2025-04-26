@@ -20,6 +20,6 @@
 #define MAX_STA_CONN 1
 
 void wifi_init_ap(void);
-void udp_server_task(void *pvParameters);
+void udp_server_task_ap(void *pvParameters);
 
 #endif

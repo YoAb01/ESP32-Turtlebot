@@ -6,4 +6,4 @@ sdkconfig.old
 flask_turtlebot/app/__pycache__/
 flask_turtlebot/venv/
 flask_turtlebot/app/routes/__pycache__/
-main/config/conn_config.yaml
+main/connection/wifi_config.h

@@ -6,6 +6,7 @@ idf_component_register(
     "robot/robot.cpp"
     "robot/servo.cpp"
     "connection/wifi_ap.cpp"
+    "connection/wifi_conn.cpp"
     "sensors/ultrasonic.cpp"
   INCLUDE_DIRS
     "."

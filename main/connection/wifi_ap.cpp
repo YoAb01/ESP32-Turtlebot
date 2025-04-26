@@ -37,7 +37,7 @@ void wifi_init_ap() {
     ESP_LOGI("WIFI_AP", "Access Point started! SSID: %s, Password: %s", ap_config.ap.ssid, ap_config.ap.password);
 }
 
-void udp_server_task(void *pvParameters) {
+void udp_server_task_ap(void *pvParameters) {
     char rx_buffer[MAX_BUF];
     struct sockaddr_in6 source_addr;
     socklen_t socklen = sizeof(source_addr);
