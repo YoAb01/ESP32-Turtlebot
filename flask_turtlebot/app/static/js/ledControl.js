@@ -1,10 +1,46 @@
 document.addEventListener('DOMContentLoaded', function() {
+  checkConnectionStatus();
   initColorWheel();
   initLEDToggles();
   initRGBToggle();
 });
 
 let colorPicker;
+let connectedToESP32 = false;
+
+function checkConnectionStatus() {
+  // Try to get connection status from the server
+  fetch('/api/connection_status')
+    .then(response => response.json())
+    .then(data => {
+      connectedToESP32 = data.connected_to_esp32;
+      updateConnectionIndicator(connectedToESP32);
+      console.log(`Connected to ESP32: ${connectedToESP32}`);
+    })
+    .catch(error => {
+      console.error('Error checking connection status:', error);
+      connectedToESP32 = false;
+      updateConnectionIndicator(false);
+    });
+  // Schedule next check
+  setTimeout(checkConnectionStatus, 5000); // Check every 5 seconds
+}
+
+function updateConnectionIndicator(connected) {
+  const indicator = document.getElementById('connection-indicator');
+  if (!indicator) return;
+  
+  if (connected) {
+    indicator.textContent = '✓ Connected to ESP32';
+    indicator.style.backgroundColor = '#4CAF50'; /* Green */
+    indicator.style.color = 'white';
+  } else {
+    indicator.textContent = '✗ Not connected to ESP32';
+    indicator.style.backgroundColor = '#F44336'; /* Red */
+    indicator.style.color = 'white';
+  }
+}
+
 
 function sendRGBColorCommand(rgb) {
   console.log("Sending RGB color:", rgb);
@@ -80,15 +116,17 @@ function initLEDToggles() {
 
       const isActive = this.classList.contains('active');
 
-      if (isRed) sendLEDCommand('red', isActive);
-      if (isGreen) sendLEDCommand('green', isActive);
-      if (isBlue) sendLEDCommand('blue', isActive);
-      if (isYellow) sendLEDCommand('yellow', isActive);
+      let color = null;
+      if (isRed) color = 'red';
+      if (isGreen) color = 'green';
+      if (isBlue) color = 'blue';
+      if (isYellow) color = 'yellow';
+
+      if (color) sendLEDCommand(color, isActive);
 
       const rgbToggle = document.querySelector('.rgb-toggle');
       if (rgbToggle && rgbToggle.classList.contains('active')) {
         rgbToggle.classList.remove('active');
-        sendRGBToggleCommand(false);
         resetRGBButtonStyle();
       }
     });
@@ -102,8 +140,6 @@ function initRGBToggle() {
   rgbToggle.addEventListener('click', function() {
     this.classList.toggle('active');
     const isActive = this.classList.contains('active');
-
-    sendRGBToggleCommand(isActive);
 
     if (isActive) {
       const r = parseInt(document.querySelector("input[name='r']").value);
@@ -142,8 +178,20 @@ function resetRGBButtonStyle() {
 
 function sendLEDCommand(color, isOn) {
   console.log(`LED ${color} set to ${isOn ? 'ON' : 'OFF'}`);
-}
-
-function sendRGBToggleCommand(isActive) {
-  console.log(`RGB mode set to ${isActive ? 'ON' : 'OFF'}`);
+  
+  fetch('api/led', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      color: color,
+      state: isOn
+    })
+  })
+  .then(response=>response.json)
+  .then(data=>console.log('Sucess', data))
+  .catch((error)=>{
+      console.error('Error', error);
+    });
 }
