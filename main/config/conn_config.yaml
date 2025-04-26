@@ -1,3 +1,0 @@
-esp32_wifi_conn:
-  wifi_ssid: "YourWifiNameNetwork"
-  wifi_password: "YourWifiPassword"
