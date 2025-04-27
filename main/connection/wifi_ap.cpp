@@ -19,12 +19,12 @@ void wifi_init_ap() {
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
     wifi_config_t ap_config = {};
-    strcpy((char *)ap_config.ap.ssid, "ESP32_ROBOT");
-    strcpy((char *)ap_config.ap.password, "TestRobotESP32");
+    strcpy((char *)ap_config.ap.ssid, WIFI_SSID);
+    strcpy((char *)ap_config.ap.password, WIFI_PASS);
     ap_config.ap.ssid_len = strlen((char *)ap_config.ap.ssid);
-    ap_config.ap.max_connection = 1;
+    ap_config.ap.max_connection = MAX_STA_CONN;
     ap_config.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
-    ap_config.ap.channel = 1;
+    ap_config.ap.channel = WIFI_CHANNEL;
 
     if (strlen((char *)ap_config.ap.password) == 0) {
         ap_config.ap.authmode = WIFI_AUTH_OPEN;
