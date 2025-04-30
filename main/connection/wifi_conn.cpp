@@ -6,11 +6,13 @@
 #include "driver/gpio.h"
 #include <string.h>
 #include "esp_spiffs.h"
+#include <inttypes.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
 #define PORT 4210
 #define MAX_BUF 128
+#define HEARTBEAT_INTERVAL_MS 3000  // Send heartbeat every 3 seconds
 
 // Shift Register Pins
 #define DATA_PIN   static_cast<gpio_num_t>(23)  // DS - Serial Data Input
@@ -29,6 +31,8 @@ static const char *WIFI_TAG = "wifi_conn";
 #define LED_RGB_B_BIT   6
 
 uint8_t shift_register_state = 0;  // Current output state of the shift register
+struct sockaddr_in6 last_client_addr; // Store the last client that sent a command
+bool has_client = false;             // Flag to indicate if we have a client address
 
 // Function to write to the shift register
 void shift_register_write(uint8_t data) {
@@ -83,10 +87,11 @@ void shift_register_init() {
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                              int32_t event_id, void* event_data)
 {
+  static int s_retry_num = 0; // Declare s_retry_num at the beginning of the function
+
   if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
     esp_wifi_connect();
   } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
-    static int s_retry_num = 0;
     if (s_retry_num < MAX_RETRY) {
       esp_wifi_connect();
       s_retry_num++;
@@ -97,6 +102,7 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
   } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
     ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
     ESP_LOGI(WIFI_TAG, "Connected with IP Address:" IPSTR, IP2STR(&event->ip_info.ip));
+    s_retry_num = 0; // Reset retry counter on successful connection
   }
 }
 
@@ -129,6 +135,8 @@ void wifi_init_sta(void)
   strcpy((char *)wifi_config.sta.ssid, WIFI_SSID_CONN);
   strcpy((char *)wifi_config.sta.password, WIFI_PASS_CONN);
   wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
+  wifi_config.sta.pmf_cfg.capable = true;
+  wifi_config.sta.pmf_cfg.required = false;
 
   ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
   ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
@@ -136,6 +144,37 @@ void wifi_init_sta(void)
 
   ESP_LOGI(WIFI_TAG, "wifi_init_sta finished");
   ESP_LOGI(WIFI_TAG, "Connecting to %s...", WIFI_SSID_CONN);
+}
+
+// Task to send heartbeats to the last connected client
+void heartbeat_task(void *pvParameters) {
+    int *sock_ptr = (int*)pvParameters;
+    int sock = *sock_ptr;
+
+    uint32_t heartbeat_counter = 0;
+    char heartbeat_msg[32]; // Declare heartbeat_msg with sufficient size
+
+    while (true) {
+        if (has_client) {
+            snprintf(heartbeat_msg, sizeof(heartbeat_msg), "HEARTBEAT:%" PRIu32, heartbeat_counter++);
+            snprintf(heartbeat_msg, sizeof(heartbeat_msg), "HEARTBEAT:%lu", (unsigned long)(heartbeat_counter++));
+
+            // Send heartbeat to the last client that communicated with us
+            int err = sendto(sock, heartbeat_msg, strlen(heartbeat_msg), 0,
+                           (struct sockaddr*)&last_client_addr, sizeof(last_client_addr));
+
+            if (err < 0) {
+                ESP_LOGW(WIFI_TAG, "Failed to send heartbeat: errno %d", errno);
+            } else {
+                ESP_LOGI(WIFI_TAG, "Heartbeat %lu sent", (unsigned long)(heartbeat_counter-1));
+            }
+        } else {
+            ESP_LOGD(WIFI_TAG, "No client connected, skipping heartbeat");
+        }
+
+        // Wait for the heartbeat interval
+        vTaskDelay(HEARTBEAT_INTERVAL_MS / portTICK_PERIOD_MS);
+    }
 }
 
 void udp_server_task_conn(void *pvParameters) {
@@ -155,6 +194,12 @@ void udp_server_task_conn(void *pvParameters) {
     return;
   }
 
+  // Set socket options for reuse
+  int reuse = 1;
+  if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
+    ESP_LOGW(WIFI_TAG, "Error setting socket options: errno %d", errno);
+  }
+
   if (bind(sock, (struct sockaddr *)&dest_addr, sizeof(dest_addr)) < 0) {
     ESP_LOGE(WIFI_TAG, "Socket unable to bind: errno %d", errno);
     close(sock);
@@ -167,16 +212,25 @@ void udp_server_task_conn(void *pvParameters) {
   // Initialize shift register
   shift_register_init();
 
+  // Start the heartbeat task with socket
+  xTaskCreate(heartbeat_task, "heartbeat_task", 4096, &sock, 5, NULL);
+
   while (true) {
     int len = recvfrom(sock, rx_buffer, MAX_BUF - 1, 0, (struct sockaddr *)&source_addr, &socklen);
 
     if (len < 0) {
       ESP_LOGE(WIFI_TAG, "recvfrom failed: errno %d", errno);
-      break;
+      // Don't exit the loop on temporary failure, just try again
+      vTaskDelay(100 / portTICK_PERIOD_MS);
+      continue;
     }
 
+    // Store the client address for heartbeats
+    memcpy(&last_client_addr, &source_addr, sizeof(source_addr));
+    has_client = true;
+
     rx_buffer[len] = 0; // Null terminate
-    ESP_LOGI(WIFI_TAG, "Received packet: %s", rx_buffer);
+    ESP_LOGI(WIFI_TAG, "Received packet from %d: %s", source_addr.sin6_port, rx_buffer);
 
     // Handle PING
     if (strcmp(rx_buffer, "PING") == 0) {
@@ -213,9 +267,6 @@ void udp_server_task_conn(void *pvParameters) {
         bool turn_on = (strcmp(state, "ON") == 0);
         uint8_t old_state = shift_register_state;
 
-        // Debug info before change
-        ESP_LOGI(WIFI_TAG, "Before change: Shift register state: 0x%02X", shift_register_state);
-
         if (strcmp(color, "red") == 0) {
           if (turn_on)
             shift_register_state |= (1 << LED_RED_BIT);
@@ -240,10 +291,6 @@ void udp_server_task_conn(void *pvParameters) {
           ESP_LOGW(WIFI_TAG, "Unknown LED color: %s", color);
           continue;
         }
-
-        // Debug info after change
-        ESP_LOGI(WIFI_TAG, "After change: Shift register state: 0x%02X", shift_register_state);
-
         // Only write to the shift register if the state has changed
         if (old_state != shift_register_state) {
           shift_register_write(shift_register_state);
@@ -288,6 +335,9 @@ void udp_server_task_conn(void *pvParameters) {
     else {
         ESP_LOGW(WIFI_TAG, "Unknown command format: %s", rx_buffer);
     }
+    // Send an acknowledgment for each command
+    const char* ack = "ACK";
+    sendto(sock, ack, strlen(ack), 0, (struct sockaddr*)&source_addr, sizeof(source_addr));
   }
   close(sock);
   vTaskDelete(NULL);

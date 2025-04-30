@@ -22,6 +22,7 @@
 
 #define MAX_RETRY 5
 
+void heartbeat_task(void *pvParameters);
 void wifi_init_sta(void);
 void udp_server_task_conn(void *pvParameters);
 
