@@ -2,21 +2,99 @@
 {% block content %}
 
 <div class="monitoring-columns">
-  <!-- Column 1: Navigation sensors -->
-  <div class="column">
+  <!-- First Column: Navigation Sensors -->
+  <div class="monitoring-column col-nav">
     <div class="card navig-sensors">
-      <div class="card-header">Navigation sensors</div>
+      <div class="card-header">Navigation Sensors</div>
+      <div class="card-body">
+        <div class="split-sensors-data">
+          <!-- Left subcolumn -->
+          <div class="sensors-left-subcolumn">
+            <!-- Gyroscope Card -->
+            <div class="sensor-mini-card">
+              <div class="sensor-mini-header">Gyroscope</div>
+              <div class="sensor-mini-content">
+                <div class="sensor-data">X: 0.05 rad/s</div>
+                <div class="sensor-data">Y: -0.12 rad/s</div>
+                <div class="sensor-data">Z: 0.03 rad/s</div>
+              </div>
+            </div>
+
+            <!-- Barometer Card -->
+            <div class="sensor-mini-card">
+              <div class="sensor-mini-header">Barometer</div>
+              <div class="sensor-mini-content">
+                <div class="sensor-data">Pressure: 1013.25 hPa</div>
+                <div class="sensor-data">Altitude: 120.5 m</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right subcolumn -->
+          <div class="sensors-right-subcolumn">
+            <!-- Accelerometer Card -->
+            <div class="sensor-mini-card">
+              <div class="sensor-mini-header">Accelerometer</div>
+              <div class="sensor-mini-content">
+                <div class="sensor-data">X: 0.02 m/s²</div>
+                <div class="sensor-data">Y: 0.15 m/s²</div>
+                <div class="sensor-data">Z: 0.98 m/s²</div>
+              </div>
+            </div>
+
+            <!-- Magnetometer Card -->
+            <div class="sensor-mini-card">
+              <div class="sensor-mini-header">Magnetometer</div>
+              <div class="sensor-mini-content">
+                <div class="sensor-data">X: 23.5 μT</div>
+                <div class="sensor-data">Y: -12.8 μT</div>
+                <div class="sensor-data">Z: 42.1 μT</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GPS Card (Full Width) -->
+        <div class="sensor-mini-card gps-card">
+          <div class="sensor-mini-header">GPS</div>
+          <div class="sensor-mini-content">
+            <div class="sensor-data">Lat: 47.6062° N</div>
+            <div class="sensor-data">Long: 122.3321° W</div>
+            <div class="sensor-data">Alt: 125 m</div>
+            <div class="sensor-data">Satellites: 9</div>
+          </div>
+        </div>
+
+        <!-- Placeholder for additional sensor -->
+        <div class="sensor-mini-card placeholder-card">
+          <div class="sensor-mini-header">Additional Sensor</div>
+          <div class="sensor-mini-content">
+            <div class="sensor-data">No data available</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-
-  <!-- Column 2 (empty for now) -->
-  <div class="column">
-    <!-- Content for column 2 will go here -->
+  
+  <!-- Second Column (placeholder) -->
+  <div class="monitoring-column col-status">
+    <div class="card">
+      <div class="card-header">TODO</div>
+      <div class="card-body">
+        <p>TODO</p>
+      </div>
+    </div>
   </div>
-
-  <!-- Column 3 (empty for now) -->
-  <div class="column">
-    <!-- Content for column 3 will go here -->
+  
+  <!-- Third Column (placeholder) -->
+  <div class="monitoring-column col-control">
+    <div class="card">
+      <div class="card-header">TODO</div>
+      <div class="card-body">
+        <p>TODO</p>
+      </div>
+    </div>
   </div>
 </div>
+
 {% endblock %}

@@ -332,3 +332,67 @@ body {
   gap: 20px;
   justify-content: space-between;
 }
+
+.monitoring-column {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Navigation Sensors Card */
+.navig-sensors .card-body {
+  padding: 15px;
+}
+
+.split-sensors-data {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.sensors-left-subcolumn,
+.sensors-right-subcolumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+  min-width: 45%;
+}
+
+/* Sensor Mini Cards */
+.sensor-mini-card {
+  width: 100%;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+}
+
+.gps-card, .placeholder-card {
+  width: 100%;
+  margin-top: 15px;
+}
+
+.sensor-mini-header {
+  background-color: #e9ecef;
+  padding: 8px 12px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.sensor-mini-content {
+  padding: 12px;
+  font-size: 13px;
+  flex-grow: 1;
+}
+
+.sensor-data {
+  margin-bottom: 6px;
+  font-family: monospace;
+}
