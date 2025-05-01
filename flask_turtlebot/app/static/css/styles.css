@@ -326,3 +326,9 @@ body {
   text-align: center;
 }
 
+/* Monitoring Layout */
+.monitoring-columns {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
