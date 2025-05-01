@@ -14,9 +14,9 @@
             <div class="sensor-mini-card">
               <div class="sensor-mini-header">Gyroscope</div>
               <div class="sensor-mini-content">
-                <div class="sensor-data">X: 0.05 rad/s</div>
-                <div class="sensor-data">Y: -0.12 rad/s</div>
-                <div class="sensor-data">Z: 0.03 rad/s</div>
+                <div class="sensor-data" id="gyro-x">X: {{ sensors.gyro.x | default('0.00') }} rad/s</div>
+                <div class="sensor-data" id="gyro-y">Y: {{ sensors.gyro.y | default('0.00') }} rad/s</div>
+                <div class="sensor-data" id="gyro-z">Z: {{ sensors.gyro.z | default('0.00') }} rad/s</div>
               </div>
             </div>
 
@@ -24,8 +24,8 @@
             <div class="sensor-mini-card">
               <div class="sensor-mini-header">Barometer</div>
               <div class="sensor-mini-content">
-                <div class="sensor-data">Pressure: 1013.25 hPa</div>
-                <div class="sensor-data">Altitude: 120.5 m</div>
+                <div class="sensor-data" id="baro-pressure">Pressure: {{ sensors.baro.pressure | default('0.00') }} hPa</div>
+                <div class="sensor-data" id="baro-altitude">Altitude: {{ sensors.baro.altitude | default('0.00') }} m</div>
               </div>
             </div>
           </div>
@@ -36,9 +36,9 @@
             <div class="sensor-mini-card">
               <div class="sensor-mini-header">Accelerometer</div>
               <div class="sensor-mini-content">
-                <div class="sensor-data">X: 0.02 m/s²</div>
-                <div class="sensor-data">Y: 0.15 m/s²</div>
-                <div class="sensor-data">Z: 0.98 m/s²</div>
+                <div class="sensor-data" id="accel-x">X: {{ sensors.accel.x | default('0.00') }} m/s²</div>
+                <div class="sensor-data" id="accel-y">Y: {{ sensors.accel.y | default('0.00') }} m/s²</div>
+                <div class="sensor-data" id="accel-z">Z: {{ sensors.accel.z | default('0.00') }} m/s²</div>
               </div>
             </div>
 
@@ -46,9 +46,9 @@
             <div class="sensor-mini-card">
               <div class="sensor-mini-header">Magnetometer</div>
               <div class="sensor-mini-content">
-                <div class="sensor-data">X: 23.5 μT</div>
-                <div class="sensor-data">Y: -12.8 μT</div>
-                <div class="sensor-data">Z: 42.1 μT</div>
+                <div class="sensor-data" id="mag-x" >X: {{ sensors.mag.x | default('0.00') }} μT</div>
+                <div class="sensor-data" id="mag-y">Y: {{ sensors.mag.y | default('0.00') }} μT</div>
+                <div class="sensor-data" id="mag-z">Z: {{ sensors.mag.z | default('0.00') }} μT</div>
               </div>
             </div>
           </div>
@@ -58,10 +58,10 @@
         <div class="sensor-mini-card gps-card">
           <div class="sensor-mini-header">GPS</div>
           <div class="sensor-mini-content">
-            <div class="sensor-data">Lat: 47.6062° N</div>
-            <div class="sensor-data">Long: 122.3321° W</div>
-            <div class="sensor-data">Alt: 125 m</div>
-            <div class="sensor-data">Satellites: 9</div>
+            <div class="sensor-data" id="gps-lat">Lat: {{ sensors.gps.lat | default('0.00') }}° {{ sensors.gps.lat_dir | default('N') }}</div>
+            <div class="sensor-data" id="gps-lon">Long: {{ sensors.gps.lon | default('0.00') }}° {{ sensors.gps.lon_dir | default('E') }}</div>
+            <div class="sensor-data" id="gps-alt">Alt: {{ sensors.gps.alt | default('0.00') }} m</div>
+            <div class="sensor-data" id="gps-sats">Satellites: {{ sensors.gps.satellites | default('0') }}</div>
           </div>
         </div>
 
