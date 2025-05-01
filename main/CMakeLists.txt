@@ -8,6 +8,7 @@ idf_component_register(
     "connection/wifi_ap.cpp"
     "connection/wifi_conn.cpp"
     "sensors/ultrasonic.cpp"
+    "sensors/imu_gy521.cpp"
   INCLUDE_DIRS
     "."
     "LED"

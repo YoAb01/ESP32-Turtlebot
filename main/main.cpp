@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include "LED_Blink.h"
+#include "freertos/idf_additions.h"
+#include "freertos/projdefs.h"
 #include "timer/timer.h"
 #include "robot/robot.h"
 #include "robot/servo.h"
 #include "connection/wifi_ap.h"
 #include "connection/wifi_conn.h"
 #include "sensors/ultrasonic.h"
+#include "sensors/imu_gy521.h"
 #include "freertos/FreeRTOS.h"
 
 #define MOTOR_SPEED 200
@@ -75,6 +78,20 @@ static void servo_sweep_task(void *pvParameter) {
   }
 }
 
+static void imu_read_task(void *pvParameters) {
+  while (1) {
+    double ax, ay, az;
+    double gx, gy, gz;
+    double tempC;
+
+    imu_gy521_read_raw(&ax, &ay, &az, &gx, &gy, &gz, &tempC);
+    printf("Accel (g): X=%.2f Y=%.2f Z=%.2f | Gyro (°/s): X=%.2f Y=%.2f Z=%.2f | Temp (°C): T=%.2f\n",
+               ax, ay, az, gx, gy, gz, tempC);
+
+    vTaskDelay(pdMS_TO_TICKS(500));
+  }
+}
+
 extern "C" void app_main(void) {
     // Control LED (timer based)
     // InitTimer1();
@@ -93,12 +110,16 @@ extern "C" void app_main(void) {
     xTaskCreate(udp_server_task_conn, "udp_server", 4096, NULL, 5, NULL);
 
     // Ultrasonic sensor task
-    init_ultrasonic();
-    trigger_ultrasonic();
-    xTaskCreate(ultrasonic_monitor_task, "ultrasonic_monitor", 2048, NULL, 3, NULL);
+    // init_ultrasonic();
+    // trigger_ultrasonic();
+    // xTaskCreate(ultrasonic_monitor_task, "ultrasonic_monitor", 2048, NULL, 3, NULL);
+
+    // IMU task sensor
+    imu_gy521_init();
+    xTaskCreate(imu_read_task, "imu_data_monitor", 2048, NULL, 2, NULL);
 
     // Servo task
-    servo_init(GPIO_NUM_15);
-    xTaskCreate(servo_sweep_task, "servo_sweep_task", 2048, NULL, 2, NULL);
+    // servo_init(GPIO_NUM_15);
+    // xTaskCreate(servo_sweep_task, "servo_sweep_task", 2048, NULL, 2, NULL);
 }
 

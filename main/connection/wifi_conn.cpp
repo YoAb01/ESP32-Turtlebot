@@ -15,9 +15,9 @@
 #define HEARTBEAT_INTERVAL_MS 3000  // Send heartbeat every 3 seconds
 
 // Shift Register Pins
-#define DATA_PIN   static_cast<gpio_num_t>(23)  // DS - Serial Data Input
-#define CLOCK_PIN  static_cast<gpio_num_t>(22)  // SHCP - Shift Register Clock
-#define LATCH_PIN  static_cast<gpio_num_t>(21)  // STCP - Storage Register Clock
+#define DATA_PIN   static_cast<gpio_num_t>(19)  // DS - Serial Data Input
+#define CLOCK_PIN  static_cast<gpio_num_t>(18)  // SHCP - Shift Register Clock
+#define LATCH_PIN  static_cast<gpio_num_t>(5)  // STCP - Storage Register Clock
 
 static const char *WIFI_TAG = "wifi_conn";
 
